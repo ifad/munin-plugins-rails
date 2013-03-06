@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = "ifad-munin-plugins-rails"
-  gem.version       = "0.2.13"
+  gem.version       = "0.2.14"
   gem.authors       = ["Andrew Eberbach",    "Bart ten Brinke", "Marcello Barnaba"]
   gem.email         = ["andrew@ebertech.ca", "",                "vjt@openssl.it"  ]
 
