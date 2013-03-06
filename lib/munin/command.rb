@@ -16,7 +16,7 @@ module Munin
     PASSENGER_PLUGIN_CONFIG = <<-DATA
 [<%= plugin_target_name %>]
 user root
-command <%= ruby_path %> %c
+command ruby %c
 env.passenger_status passenger-status
 env.passenger_memory_stats passenger-memory-stats
 env.graph_category <%= graph_category %>
@@ -26,9 +26,10 @@ DATA
 [<%= plugin_target_name %>]    
 env.log_file <%= options[:log_file] %>
 user root
-command <%= ruby_path %> %c
+command ruby %c
 env.request_log_analyzer request-log-analyzer
 env.graph_category <%= graph_category %>
+env.log_format rails3
 DATA
 
     PASSENGER_CATEGORY = "Passenger"
@@ -36,23 +37,21 @@ DATA
     def install_application(args)
       app_name = args.shift
       log_file = args.shift
-      ruby_path = "/usr/bin/env GEM_PATH=#{`echo $GEM_PATH`[0...-1]} GEM_HOME=#{`echo $GEM_HOME`[0...-1]} PATH=#{`echo $PATH`[0...-1]} ruby"
       RAILS_PLUGINS.each do |plugin|
         plugin_target_name = [app_name, plugin].join("_")
         add_plugin(plugin, plugin_target_name)
-        add_plugin_config(plugin_target_name, app_name, ruby_path, RAILS_PLUGIN_CONFIG, :log_file => log_file)
+        add_plugin_config(plugin_target_name, app_name, RAILS_PLUGIN_CONFIG, :log_file => log_file)
       end      
     end
 
     def install_passenger_plugins
-      ruby_path = "/usr/bin/env GEM_PATH=#{`echo $GEM_PATH`[0...-1]} GEM_HOME=#{`echo $GEM_HOME`[0...-1]} PATH=#{`echo $PATH`[0...-1]} ruby"
       PASSENGER_PLUGINS.each do |plugin|
         add_plugin(plugin, plugin)
-        add_plugin_config(plugin, PASSENGER_CATEGORY, ruby_path, PASSENGER_PLUGIN_CONFIG)
+        add_plugin_config(plugin, PASSENGER_CATEGORY, PASSENGER_PLUGIN_CONFIG)
       end
     end
 
-    def add_plugin_config(plugin_target_name, graph_category, ruby_path, config_template, options = {})
+    def add_plugin_config(plugin_target_name, graph_category, config_template, options = {})
       FileUtils.mkdir_p(munin_plugin_config_path)      
       template = ERB.new config_template
       File.open(File.join(munin_plugin_config_path, plugin_target_name), "w+") do |file|
@@ -62,8 +61,12 @@ DATA
 
     def add_plugin(plugin_file, plugin_target_name = nil)
       FileUtils.mkdir_p(munin_plugins_path)      
-      plugin_target_name ||= plugin_file
-      `ln -nsf "#{File.join(munin_dir, plugin_file)}" "#{munin_plugins_path}/#{plugin_target_name}"`      
+
+      plugin_source_path = File.join(munin_dir, plugin_file)
+      plugin_target_path = File.join(munin_plugins_path, plugin_target_name || plugin_file)
+
+      File.unlink plugin_target_path if File.symlink?(plugin_target_path)
+      File.symlink plugin_source_path, plugin_target_path
     end
 
     def munin_plugins_path
