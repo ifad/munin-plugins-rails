@@ -1,8 +1,8 @@
 Gem::Specification.new do |gem|
   gem.name          = "ifad-munin-plugins-rails"
-  gem.version       = "0.2.12"
-  gem.authors       = ["Andrew Eberbach", "Bart ten Brinke"]
-  gem.email         = "andrew@ebertech.ca"
+  gem.version       = "0.2.13"
+  gem.authors       = ["Andrew Eberbach",    "Bart ten Brinke", "Marcello Barnaba"]
+  gem.email         = ["andrew@ebertech.ca", "",                "vjt@openssl.it"  ]
 
   gem.description   = "Plugins for Munin that use passenger and Request Log Analyzer"
   gem.summary       = gem.description
