@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    ifad-munin-plugins-rails (0.2.12)
+      request-log-analyzer (~> 1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    request-log-analyzer (1.12.8)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ifad-munin-plugins-rails!
